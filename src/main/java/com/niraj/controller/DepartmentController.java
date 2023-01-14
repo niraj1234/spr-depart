@@ -26,6 +26,7 @@ public class DepartmentController {
 
 	@GetMapping("/department/all")
 	public List<Department> getAllDepartments(){
+		System.out.println("|||==>  Getting All data after AWS-CodePipeline ==> ");
 		return departmentService.getAllDepartment();
 	}
 
