@@ -10,4 +10,6 @@ public interface DepartmentService {
 
 	List<Department> getAllDepartment();
 
+	Department getDepartmentById(Long deptId);
+
 }
