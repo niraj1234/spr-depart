@@ -2,7 +2,12 @@ package com.niraj.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,63 +18,71 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.niraj.entity.Department;
+import com.niraj.error.DepartmentNameParameterException;
+import com.niraj.error.DepartmentNotFountException;
 import com.niraj.service.DepartmentService;
 
 @RestController
-@RequestMapping("/d")
+@RequestMapping("/department")
 public class DepartmentController {
 
+	final Logger L = LoggerFactory.getLogger(DepartmentController.class);
+	
+	@Value("${admin.email}")
+	private String adminEmail;
+	
 	@Autowired
-	private DepartmentService departmentService;
+	private DepartmentService deptService;
 	
-	@PostMapping("/department")
-	public Department saveDepartment(@RequestBody Department department) {
-		return departmentService.saveDepartment(department);	
+	@PostMapping("/")
+	public Department saveDepartment(@Valid @RequestBody Department department) {
+		L.info("Department Data for add => " + department);
+		return deptService.saveDepartment(department);	
 	}
 
-	@GetMapping("/department/all")
+	@GetMapping("/all")
 	public List<Department> getAllDepartments(){
-		System.out.println("|||==>  Getting All data after AWS-CodePipeline ==> ");
-		return departmentService.getAllDepartment();
+		System.out.println("|||==>  Getting All data after AWS-CodePipeline ==> "+ adminEmail);
+		return deptService.getAllDepartment();
 	}
 
-	@GetMapping("/department/{deptId}")
-	public Department getDepartmentById(@PathVariable("deptId") Long deptId ) {
-		return departmentService.getDepartmentById(deptId);
+	@GetMapping("/{deptId}")
+	public Department getDepartmentById(@PathVariable("deptId") Long deptId) throws DepartmentNotFountException {
+		return deptService.getDepartmentById(deptId);
 	}
 	
-	@GetMapping("/departmentByName/{deptName}")
-	public Department getDepartmentByName(@PathVariable("deptName") String deptName ) {
-		return departmentService.getDepartmentByName(deptName);
+	@GetMapping("/byName/{deptName}")
+	public Department getDepartmentByName(@PathVariable("deptName") String deptName) throws DepartmentNameParameterException {
+		return deptService.getDepartmentByName(deptName);
 	}
 
-	@GetMapping("/departmentByCode/{deptCode}")
+	@GetMapping("/byCode/{deptCode}")
 	public Department getDepartmentByCode(@PathVariable("deptCode") String deptCode) {
-		return departmentService.getDepartmentByCode(deptCode);
+		return deptService.getDepartmentByCode(deptCode);
 	}
 
-	@PostMapping("/department/many")
+	@PostMapping("/many")
 	public String saveManyDepartment(@RequestBody List<Department> departments) {
 		System.out.println("Incoming Data" + departments);	
         departments.stream().forEach(d -> {
-        	departmentService.saveDepartment(d);
+        	deptService.saveDepartment(d);
         });		
 		return "Records inserted ==> "+departments.size();	
 	}
 
 
-	@DeleteMapping("/department/{deptId}")
+	@DeleteMapping("/delete/{deptId}")
 	public String deleteDEpartmentById(@PathVariable("deptId") Long deptId) {
-		String dbResponse = departmentService.deleteDepartmentById(deptId);
+		String dbResponse = deptService.deleteDepartmentById(deptId);
 		System.out.println("Department Data ==>  " + dbResponse);
 		return dbResponse;		
 	}
 	
 
-	@PutMapping("/department/update/{deptId}")
-	public Department updateDepartment( @RequestBody Department department , 
+	@PutMapping("/update/{deptId}")
+	public Department updateDepartment( @RequestBody Department department, 
 			@PathVariable("deptId") Long deptId ) {
-		Department updatedDepartment = departmentService.updateDepartment(deptId , department);		
+		Department updatedDepartment = deptService.updateDepartment(deptId , department);		
 		return updatedDepartment;
 	}
 	
