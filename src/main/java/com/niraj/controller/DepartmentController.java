@@ -72,7 +72,7 @@ public class DepartmentController {
 
 
 	@DeleteMapping("/delete/{deptId}")
-	public String deleteDEpartmentById(@PathVariable("deptId") Long deptId) {
+	public String deleteDepartmentById(@PathVariable("deptId") Long deptId) {
 		String dbResponse = deptService.deleteDepartmentById(deptId);
 		System.out.println("Department Data ==>  " + dbResponse);
 		return dbResponse;		
